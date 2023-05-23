@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
 from django.utils.timezone import localtime, make_aware, now
 from rest_framework import serializers
 
@@ -34,6 +35,8 @@ from care.facility.models.patient_base import (
 from care.facility.models.patient_consultation import PatientConsultation
 from care.facility.models.patient_external_test import PatientExternalTest
 from care.facility.models.patient_tele_consultation import PatientTeleConsultation
+from care.hcx.models.claim import Claim
+from care.hcx.models.policy import Policy
 from care.users.api.serializers.lsg import (
     DistrictSerializer,
     LocalBodySerializer,
@@ -45,13 +48,7 @@ from care.users.models import User
 from care.utils.notification_handler import NotificationGenerator
 from care.utils.queryset.facility import get_home_facility_queryset
 from care.utils.serializer.external_id_field import ExternalIdSerializerField
-from care.utils.serializer.phonenumber_ispossible_field import (
-    PhoneNumberIsPossibleField,
-)
 from config.serializers import ChoiceField
-from care.hcx.models.policy import Policy
-from care.hcx.models.claim import Claim
-from django.db.models import Q
 
 
 class PatientMetaInfoSerializer(serializers.ModelSerializer):
@@ -164,8 +161,6 @@ class PatientDetailSerializer(PatientListSerializer):
         class Meta:
             model = PatientTeleConsultation
             fields = "__all__"
-
-    phone_number = PhoneNumberIsPossibleField()
 
     facility = ExternalIdSerializerField(
         queryset=Facility.objects.all(), required=False
@@ -417,7 +412,6 @@ class FacilityPatientStatsHistorySerializer(serializers.ModelSerializer):
 
 class PatientSearchSerializer(serializers.ModelSerializer):
     gender = ChoiceField(choices=GENDER_CHOICES)
-    phone_number = PhoneNumberIsPossibleField()
     patient_id = serializers.UUIDField(source="external_id", read_only=True)
 
     # facility_id = serializers.UUIDField(read_only=True, allow_null=True)
