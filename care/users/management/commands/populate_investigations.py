@@ -1,6 +1,9 @@
 from django.core.management import BaseCommand
 
-from care.facility.models.patient_investigation import PatientInvestigation, PatientInvestigationGroup
+from care.facility.models.patient_investigation import (
+    PatientInvestigation,
+    PatientInvestigationGroup,
+)
 
 # TODO Move the Investigations and Investigation Groups into a proper JSON like python dict structure to allow easy updates and additions.
 investigations = """name	unit	ideal	min	max	type (Float/String/Choice)	choices	category_id
@@ -62,7 +65,6 @@ Fibrinogen	mg/dl	200-400 mg/dl	200	400	Float		2
 GCT	mg/dl	< 140 mg/dl	0	140	Float		2
 GTT	mg/dl	140-200 mg/dl	140	200	Float		2
 GGT	U/L	11-50 U/L	11	50	Float		2
-HbA1C	%	4-5.6 %	4	5.6	Float		2
 Serum Copper	mcg/dl	85-180 mcg/dl	85	180	Float		2
 Serum Lead	mcg/dl	upto 10 mcg/dl	0	10	Float		2
 Iron	mcg/dl	60-170 mcg/dl	60	170	Float		2
@@ -139,7 +141,7 @@ Stool Microscopy					String		3"""
 
 
 investigation_groups = """Id	Name
-1	Haematology 
+1	Haematology
 2	Biochemistry test
 3	Urine Test"""
 
@@ -162,9 +164,13 @@ class Command(BaseCommand):
         investigation_group_dict = {}
         for investigation_group in investigation_group_data:
             current_investigation_group = investigation_group.split("\t")
-            current_obj = PatientInvestigationGroup.objects.filter(name=current_investigation_group[1]).first()
+            current_obj = PatientInvestigationGroup.objects.filter(
+                name=current_investigation_group[1]
+            ).first()
             if not current_obj:
-                current_obj = PatientInvestigationGroup(name=current_investigation_group[1])
+                current_obj = PatientInvestigationGroup(
+                    name=current_investigation_group[1]
+                )
                 current_obj.save()
             investigation_group_dict[current_investigation_group[0]] = current_obj
         investigation_data = investigations.split("\n")[1:]
